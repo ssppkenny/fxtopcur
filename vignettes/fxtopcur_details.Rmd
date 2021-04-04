@@ -15,6 +15,14 @@ knitr::opts_chunk$set(
 ```
 This is a simple package for currency conversion.
 ```{r setup}
+library(stringr)
+library(dplyr)
+library(purrr)
+library(parallel)
+library(htmltab)
+library(lubridate)
+library(data.table)
+library(ggplot2)
 library(fxtopcur)
 ```
 

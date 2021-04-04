@@ -10,6 +10,14 @@ Authors@R:
 Description: It is possible to fetch and plot currency conversion rates for many
             different currencies.
 License: MIT + file LICENSE
+Depends:
+    stringr,
+    dplyr,
+    purrr,
+    htmltab,
+    lubridate,
+    ggplot2,
+    data.table
 Imports:
     stringr,
     dplyr,
