@@ -2,4 +2,5 @@
 
 S3method(fetch,CurrencyRange)
 S3method(plot,CurrencyData)
+export(fetch)
 export(make_cur_range)

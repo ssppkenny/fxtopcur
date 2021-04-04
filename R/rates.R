@@ -30,6 +30,8 @@ make_cur_data <- function(cur_range, data) {
   structure(list(cur_range=cur_range, data=data), class="CurrencyData")
 }
 
+#' Fetches currency conversion data
+#' @export
 fetch <- function(x) UseMethod("fetch")
 
 #' Fetches currency conversion data
