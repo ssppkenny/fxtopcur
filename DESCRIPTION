@@ -17,7 +17,8 @@ Depends:
     htmltab,
     lubridate,
     ggplot2,
-    data.table
+    data.table,
+    parallel
 Imports:
     stringr,
     dplyr,
@@ -25,7 +26,8 @@ Imports:
     htmltab,
     lubridate,
     ggplot2,
-    data.table
+    data.table,
+    parallel
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
