@@ -83,7 +83,6 @@ get_rates <- function(rng) {
   year_to = rng["year_to"]
   s <- "https://fxtop.com/en/historical-exchange-rates.php?A=1&C1=${from_cur}&C2=${to_cur}&TR=1&DD1=${day}&MM1=${month}&YYYY1=${year_from}&B=1&P=&I=1&DD2=${day}&MM2=${month}&YYYY2=${year_to}&btnOK=Go%21"
   myurl <- str_interp(s)
-  print(myurl)
   from_date = as.Date(str_interp("${year_from}-${month}-${day}"), format = "%Y-%m-%d")
   to_date = as.Date(str_interp("${year_to}-${month}-${day}"), format = "%Y-%m-%d")
   days <- as.numeric(to_date - from_date, units="days")
