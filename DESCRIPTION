@@ -1,0 +1,29 @@
+Package: fxtopcur
+Title: This Package Provides currency conversion
+Version: 0.1
+Authors@R: 
+    person(given = "Sergey",
+           family = "Mikhno",
+           role = c("aut", "cre"),
+           email = "sergey.mikhno@gmail.com",
+           comment = "Currency conversion package")
+Description: It is possible to fetch and plot currency conversion rates for many
+            different currencies.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    stringr,
+    dplyr,
+    purrr,
+    htmltab,
+    lubridate,
+    ggplot2,
+    data.table
+VignetteBuilder: knitr
+Config/testthat/edition: 3

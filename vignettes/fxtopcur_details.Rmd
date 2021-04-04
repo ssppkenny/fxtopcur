@@ -1,0 +1,25 @@
+---
+title: "fxtopcur_details"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{fxtopcur_details}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+This is a simple package for currency conversion.
+```{r setup}
+library(fxtopcur)
+```
+
+```{r democode}
+rng <- make_cur_range()
+df <- fetch(rng)
+plot(df)
+```
