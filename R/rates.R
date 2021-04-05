@@ -51,6 +51,8 @@ fetch_cur_data <- function(cur_from = "CHF", cur_to="RUB", years=1) {
 }
 
 get_rates <- function(rng) {
+  loc <- Sys.getlocale("LC_TIME")
+  Sys.setlocale("LC_TIME", "C")
   cur_from = rng["cur_from"]
   cur_to = rng["cur_to"]
   day_from = stringr::str_pad(rng["day_from"], 2, "left", pad="0")
@@ -70,6 +72,7 @@ get_rates <- function(rng) {
   rates <- rates %>% dplyr::mutate("Date" = as.Date(Date, format = "%A %d %B %Y")) %>% dplyr::rename("day" = all_of("Date"))
   rates <- rates %>% dplyr::mutate(percent = str_replace(percent, "%", "")) %>% dplyr::mutate(percent=as.double(percent), value=as.double(value)) %>% dplyr::arrange(day)
   rates <- rates %>% dplyr::select(day, value, percent)
+  Sys.setlocale("LC_TIME", loc)
   return(rates)
 }
 
