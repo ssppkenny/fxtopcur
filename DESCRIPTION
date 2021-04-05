@@ -13,19 +13,15 @@ License: MIT + file LICENSE
 Depends:
     stringr,
     dplyr,
-    purrr,
     htmltab,
     lubridate,
-    ggplot2,
     data.table,
     parallel
 Imports:
     stringr,
     dplyr,
-    purrr,
     htmltab,
     lubridate,
-    ggplot2,
     data.table,
     parallel
 Encoding: UTF-8
@@ -35,13 +31,6 @@ RoxygenNote: 7.1.1
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0),
-    stringr,
-    dplyr,
-    purrr,
-    htmltab,
-    lubridate,
-    ggplot2,
-    data.table
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
