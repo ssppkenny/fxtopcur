@@ -7,91 +7,69 @@ library(lubridate)
 library(data.table)
 library(ggplot2)
 
-#' Creates a currency range object
+get_from_date <- function(year_to, month_to, day_to, years) {
+  next_date <- lubridate::make_datetime(year_to-years, month_to, day_to) + lubridate::days(1)
+  list("year"=lubridate::year(next_date), "month"=lubridate::month(next_date), "day"=lubridate::day(next_date))
+}
+
+make_cur_range <- function(cur_from="CHF", cur_to="RUB", day_to=lubridate::day(Sys.Date()), month_to=lubridate::month(Sys.Date()), year_to=lubridate::year(Sys.Date()),
+                           day_from=get_from_date(year_to, month_to, day_to)$day, month_from=get_from_date(year_to, month_to, day_to)$month,
+                           year_from=year_to-1) {
+  structure(list(cur_from=cur_from, cur_to=cur_to, day_from=day_from, day_to=day_to, month_from=month_from, year_from=year_from, year_to=year_to), class="CurrencyRange")
+}
+
+#' Fetches time series with conversion rates for two currencies and year count
 #'
-#' @param from_cur string (3-letter ISO Code) from which currency to convert
-#' @param to_cur string (3-letter ISO code) to which currency to convert
-#' @param day string (3-letter ISO code) to which currency to convert
-#' @param month string (3-letter ISO code) to which currency to convert
-#' @param year_from from which year to convert
-#' @param year_to to which year to convert
-#' @return A currency range object
+#' @param cur_from string (3-letter ISO Code) source currency
+#' @param cur_to string (3-letter ISO code) target currency
+#' @param years a number of years
+#' @return A data frame
 #' @examples
-#' make_cur_range()
-#' make_cur_range(from_cur="USD")
+#' fetch_cur_data()
+#' fetch_cur_data(from_cur="USD")
 #' @export
-make_cur_range <- function(from_cur="CHF", to_cur="RUB", day=lubridate::day(Sys.Date()),
-                           month=lubridate::month(Sys.Date()), year_from=lubridate::year(Sys.Date())- 1,
-                           year_to=lubridate::year(Sys.Date())) {
-  structure(list(from_cur=from_cur, to_cur=to_cur, day=day, month=month, year_from=year_from, year_to=year_to), class="CurrencyRange")
-}
+fetch_cur_data <- function(cur_from = "CHF", cur_to="RUB", years=1) {
+  sys_date <- Sys.Date()
+  day_to <- lubridate::day(sys_date)
+  month_to <- lubridate::month(sys_date)
+  year_to <- lubridate::year(sys_date)
+  ranges <- list()
+  for (i in 1:years) {
+    day_from=get_from_date(year_to, month_to, day_to, i)$day
+    month_from=get_from_date(year_to, month_to, day_to, i)$month
+    year_from=get_from_date(year_to, month_to, day_to, i)$year
+    r <- make_cur_range(cur_from=cur_from, cur_to=cur_to, day_to=day_to, month_to=month_to, year_to=year_to-i+1,
+                                day_from=day_from, month_from=month_from, year_from=year_from)
+    ranges[[i]] <- r
+  }
 
-make_cur_data <- function(cur_range, data) {
-  structure(list(cur_range=cur_range, data=data), class="CurrencyData")
-}
-
-#' Fetches currency conversion data
-#' @export
-fetch <- function(x) UseMethod("fetch")
-
-#' Fetches currency conversion data
-#'
-#' @param x currency range object
-#' @return A currency data object
-#' @examples
-#' fetch(rng)
-#' @export
-fetch.CurrencyRange <- function(x) {
-  ranges <- create_ranges(x$from_cur, x$to_cur, x$day, x$month, x$year_from, x$year_to)
-  make_cur_data(x, get_cur_rates(ranges))
-}
-
-#' Plots currency conversion data
-#'
-#' @param x currency data object
-#' @return A ggplot2 plot of time series
-#' @examples
-#' plot(cur_data)
-#' @export
-plot.CurrencyData <- function(x) {
-  x$data %>% ggplot(aes(x=day,y=value)) + geom_line()
-}
-
-cur_range <- function(from_cur="CHF", to_cur="RUB", day=lubridate::day(Sys.Date()),
-                      month=lubridate::month(Sys.Date()), year_from=lubridate::year(Sys.Date())- 1, year_to=lubridate::year(Sys.Date())) {
-  list(from_cur=from_cur, to_cur=to_cur, day=day, month=month, year_from=year_from, year_to=year_to)
-}
-
-create_ranges <- function(from_cur, to_cur, day, month, year_from, year_to) {
-  diff <- year_to - year_from
-  1:diff %>% map(function(x) {cur_range(from_cur, to_cur, day, month, year_to - x, year_to - x + 1 )})
-}
-
-get_cur_rates <- function(rng) {
-  lst <- mclapply(rng, function(x) {
+  lst <- parallel::mclapply(ranges, function(x) {
     get_rates(x)
-  }, mc.cores = detectCores())
-  rbindlist(lst)
+  }, mc.cores = parallel::detectCores())
+  df <- data.table::rbindlist(lst)
+  dplyr::tibble(df)
 }
 
 get_rates <- function(rng) {
-  from_cur = rng["from_cur"]
-  to_cur = rng["to_cur"]
-  day = str_pad(rng["day"], 2, "left", pad="0")
-  month = str_pad(rng["month"], 2, "left", pad="0")
+  cur_from = rng["cur_from"]
+  cur_to = rng["cur_to"]
+  day_from = stringr::str_pad(rng["day_from"], 2, "left", pad="0")
+  day_to = stringr::str_pad(rng["day_to"], 2, "left", pad="0")
+  month_from = stringr::str_pad(rng["month_from"], 2, "left", pad="0")
+  month_to = stringr::str_pad(rng["month_from"], 2, "left", pad="0")
   year_from = rng["year_from"]
   year_to = rng["year_to"]
-  s <- "https://fxtop.com/en/historical-exchange-rates.php?A=1&C1=${from_cur}&C2=${to_cur}&TR=1&DD1=${day}&MM1=${month}&YYYY1=${year_from}&B=1&P=&I=1&DD2=${day}&MM2=${month}&YYYY2=${year_to}&btnOK=Go%21"
-  myurl <- str_interp(s)
-  from_date = as.Date(str_interp("${year_from}-${month}-${day}"), format = "%Y-%m-%d")
-  to_date = as.Date(str_interp("${year_to}-${month}-${day}"), format = "%Y-%m-%d")
+  s <- "https://fxtop.com/en/historical-exchange-rates.php?A=1&C1=${cur_from}&C2=${cur_to}&TR=1&DD1=${day_from}&MM1=${month_from}&YYYY1=${year_from}&B=1&P=&I=1&DD2=${day_to}&MM2=${month_to}&YYYY2=${year_to}&btnOK=Go%21"
+  myurl <- stringr::str_interp(s)
+  from_date = as.Date(stringr::str_interp("${year_from}-${month_from}-${day_from}"), format = "%Y-%m-%d")
+  to_date = as.Date(stringr::str_interp("${year_to}-${month_to}-${day_to}"), format = "%Y-%m-%d")
   days <- as.numeric(to_date - from_date, units="days")
-  rates <- htmltab(doc = myurl, which = "//table[@border=1]")[1:days,]
-  rate_col <- paste(from_cur, to_cur, sep="/")
-  rates <- rates %>% rename("value" = 2, "percent" = 3)
-  rates <- rates %>% mutate("Date" = as.Date(Date, format = "%A %d %B %Y")) %>% rename("day" = all_of("Date"))
-  rates <- rates %>% mutate(percent = str_replace(percent, "%", "")) %>% mutate(percent=as.double(percent), value=as.double(value)) %>% arrange(day)
-  rates <- rates %>% select(day, value, percent)
+  rates <- htmltab::htmltab(doc = myurl, which = "//table[@border=1]")[1:days,]
+  rate_col <- paste(cur_from, cur_to, sep="/")
+  rates <- rates %>% dplyr::rename("value" = 2, "percent" = 3)
+  rates <- rates %>% dplyr::mutate("Date" = as.Date(Date, format = "%A %d %B %Y")) %>% dplyr::rename("day" = all_of("Date"))
+  rates <- rates %>% dplyr::mutate(percent = str_replace(percent, "%", "")) %>% dplyr::mutate(percent=as.double(percent), value=as.double(value)) %>% dplyr::arrange(day)
+  rates <- rates %>% dplyr::select(day, value, percent)
   return(rates)
 }
 
