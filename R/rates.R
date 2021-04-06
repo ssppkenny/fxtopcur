@@ -28,7 +28,7 @@ make_cur_range <- function(cur_from="CHF", cur_to="RUB", day_to=lubridate::day(S
 #' fetch_cur_data()
 #' fetch_cur_data(from_cur="USD")
 #' @export
-fetch_cur_data <- function(cur_from <- "CHF", cur_to="RUB", years=1) {
+fetch_cur_data <- function(cur_from="CHF", cur_to="RUB", years=1) {
   sys_date <- Sys.Date()
   day_to <- lubridate::day(sys_date)
   month_to <- lubridate::month(sys_date)
