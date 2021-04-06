@@ -45,7 +45,7 @@ fetch_cur_data <- function(cur_from="CHF", cur_to="RUB", years=1) {
 
   lst <- parallel::mclapply(ranges, function(x) {
     get_rates(x)
-  }, mc.cores <- parallel::detectCores())
+  }, mc.cores=parallel::detectCores())
   df <- data.table::rbindlist(lst)
   dplyr::tibble(df)
 }
