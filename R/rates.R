@@ -1,11 +1,3 @@
-library(stringr)
-library(dplyr)
-library(parallel)
-library(htmltab)
-library(lubridate)
-library(data.table)
-library(ggplot2)
-
 get_from_date <- function(year_to, month_to, day_to, years) {
   next_date <- lubridate::make_datetime(year_to-years, month_to, day_to) + lubridate::days(1)
   list("year"=lubridate::year(next_date), "month"=lubridate::month(next_date), "day"=lubridate::day(next_date))
