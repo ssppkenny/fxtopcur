@@ -28,7 +28,7 @@ make_cur_range <- function(cur_from="CHF", cur_to="RUB", day_to=lubridate::day(S
 #' fetch_cur_data()
 #' fetch_cur_data(from_cur="USD")
 #' @export
-fetch_cur_data <- function(cur_from = "CHF", cur_to="RUB", years=1) {
+fetch_cur_data <- function(cur_from <- "CHF", cur_to="RUB", years=1) {
   sys_date <- Sys.Date()
   day_to <- lubridate::day(sys_date)
   month_to <- lubridate::month(sys_date)
@@ -45,7 +45,7 @@ fetch_cur_data <- function(cur_from = "CHF", cur_to="RUB", years=1) {
 
   lst <- parallel::mclapply(ranges, function(x) {
     get_rates(x)
-  }, mc.cores = parallel::detectCores())
+  }, mc.cores <- parallel::detectCores())
   df <- data.table::rbindlist(lst)
   dplyr::tibble(df)
 }
@@ -55,27 +55,27 @@ pad <- function(x) {
 }
 
 get_rates <- function(rng) {
-  cur_from = rng["cur_from"]
-  cur_to = rng["cur_to"]
-  day_from = pad(rng["day_from"])
-  day_to = pad(rng["day_to"])
-  month_from = pad(rng["month_from"])
-  month_to = pad(rng["month_to"])
-  year_from = rng["year_from"]
-  year_to = rng["year_to"]
+  cur_from <- rng["cur_from"]
+  cur_to <- rng["cur_to"]
+  day_from <- pad(rng["day_from"])
+  day_to <- pad(rng["day_to"])
+  month_from <- pad(rng["month_from"])
+  month_to <- pad(rng["month_to"])
+  year_from <- rng["year_from"]
+  year_to <- rng["year_to"]
   s <- "https://fxtop.com/en/historical-exchange-rates.php?A=1&C1=${cur_from}&C2=${cur_to}&TR=1&DD1=${day_from}&MM1=${month_from}&YYYY1=${year_from}&B=1&P=&I=1&DD2=${day_to}&MM2=${month_to}&YYYY2=${year_to}&btnOK=Go%21"
   myurl <- stringr::str_interp(s)
-  from_date = as.Date(stringr::str_interp("${year_from}-${month_from}-${day_from}"), format = "%Y-%m-%d")
-  to_date = as.Date(stringr::str_interp("${year_to}-${month_to}-${day_to}"), format = "%Y-%m-%d")
+  from_date <- as.Date(stringr::str_interp("${year_from}-${month_from}-${day_from}"), format="%Y-%m-%d")
+  to_date <- as.Date(stringr::str_interp("${year_to}-${month_to}-${day_to}"), format="%Y-%m-%d")
   days <- as.numeric(to_date - from_date, units="days")
-  rates <- htmltab::htmltab(doc = myurl, which = "//table[@border=1]")[1:days,]
+  rates <- htmltab::htmltab(doc=myurl, which="//table[@border=1]")[1:days,]
   rate_col <- paste(cur_from, cur_to, sep="/")
-  rates <- rates %>% dplyr::rename("value" = 2, "percent" = 3)
+  rates <- rates %>% dplyr::rename("value"=2, "percent"=3)
   loc <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "C")
-  rates <- rates %>% dplyr::mutate("Date" = as.Date(Date, format = "%A %d %B %Y")) %>% dplyr::rename("day" = all_of("Date"))
+  rates <- rates %>% dplyr::mutate("Date"=as.Date(Date, format="%A %d %B %Y")) %>% dplyr::rename("day"=all_of("Date"))
   Sys.setlocale("LC_TIME", loc)
-  rates <- rates %>% dplyr::mutate(percent = str_replace(percent, "%", "")) %>% dplyr::mutate(percent=as.double(percent), value=as.double(value)) %>% dplyr::arrange(day)
+  rates <- rates %>% dplyr::mutate(percent=str_replace(percent, "%", "")) %>% dplyr::mutate(percent=as.double(percent), value=as.double(value)) %>% dplyr::arrange(day)
   rates <- rates %>% dplyr::select(day, value, percent)
 
   return(rates)
