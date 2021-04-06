@@ -1,6 +1,5 @@
 library(stringr)
 library(dplyr)
-library(purrr)
 library(parallel)
 library(htmltab)
 library(lubridate)
@@ -15,7 +14,8 @@ get_from_date <- function(year_to, month_to, day_to, years) {
 make_cur_range <- function(cur_from="CHF", cur_to="RUB", day_to=lubridate::day(Sys.Date()), month_to=lubridate::month(Sys.Date()), year_to=lubridate::year(Sys.Date()),
                            day_from=get_from_date(year_to, month_to, day_to)$day, month_from=get_from_date(year_to, month_to, day_to)$month,
                            year_from=year_to-1) {
-  structure(list(cur_from=cur_from, cur_to=cur_to, day_from=day_from, day_to=day_to, month_from=month_from, year_from=year_from, year_to=year_to), class="CurrencyRange")
+  structure(list(cur_from=cur_from, cur_to=cur_to, day_from=day_from, day_to=day_to, month_from=month_from,
+              month_to=month_to, year_from=year_from, year_to=year_to), class="CurrencyRange")
 }
 
 #' Fetches time series with conversion rates for two currencies and year count
