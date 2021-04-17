@@ -62,10 +62,10 @@ fetch_cur_data <- function(cur_from="CHF", cur_to="RUB", years=1) {
 get_rates <- function(rng) {
   cur_from <- rng["cur_from"]
   cur_to <- rng["cur_to"]
-  day_from <- pad(rng["day_from"])
-  day_to <- pad(rng["day_to"])
-  month_from <- pad(rng["month_from"])
-  month_to <- pad(rng["month_to"])
+  day_from <- fxtopcur::pad(rng["day_from"])
+  day_to <- fxtopcur::pad(rng["day_to"])
+  month_from <- fxtopcur::pad(rng["month_from"])
+  month_to <- fxtopcur::pad(rng["month_to"])
   year_from <- rng["year_from"]
   year_to <- rng["year_to"]
   s <- "https://fxtop.com/en/historical-exchange-rates.php?A=1&C1=${cur_from}&C2=${cur_to}&TR=1&DD1=${day_from}&MM1=${month_from}&YYYY1=${year_from}&B=1&P=&I=1&DD2=${day_to}&MM2=${month_to}&YYYY2=${year_to}&btnOK=Go%21"
