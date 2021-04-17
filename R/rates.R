@@ -28,7 +28,8 @@ make_cur_range <- function(cur_from="CHF", cur_to="RUB", day_to=lubridate::day(S
 #' fetch_cur_data()
 #' fetch_cur_data(from_cur="USD")
 #' @export
-fetch_cur_data <- function(cur_from = "CHF", cur_to="RUB", years=1) {
+
+fetch_cur_data <- function(cur_from="CHF", cur_to="RUB", years=1) {
   sys_date <- Sys.Date()
   day_to <- lubridate::day(sys_date)
   month_to <- lubridate::month(sys_date)
@@ -39,17 +40,28 @@ fetch_cur_data <- function(cur_from = "CHF", cur_to="RUB", years=1) {
     month_from=get_from_date(year_to, month_to, day_to, i)$month
     year_from=get_from_date(year_to, month_to, day_to, i)$year
     r <- make_cur_range(cur_from=cur_from, cur_to=cur_to, day_to=day_to, month_to=month_to, year_to=year_to-i+1,
-                                day_from=day_from, month_from=month_from, year_from=year_from)
+                        day_from=day_from, month_from=month_from, year_from=year_from)
     ranges[[i]] <- r
   }
-
-  lst <- parallel::mclapply(ranges, function(x) {
-    get_rates(x)
-  }, mc.cores = parallel::detectCores())
-  df <- data.table::rbindlist(lst)
-  dplyr::tibble(df)
+  l <- detectCores()
+  if (length(ranges)<l) {
+    l <- length(ranges)
+  }
+  if (length(ranges)==1) {
+    df <- get_rates(ranges[[1]])
+    dplyr::tibble(df)
+  } else {
+    cl <- parallel::makeCluster(l)
+    parallel::clusterExport(cl, "pad")
+    parallel::clusterExport(cl, "%>%")
+    parallel::clusterExport(cl, "str_replace")
+    lst <- parallel::parLapply(cl, ranges, get_rates)
+    parallel::stopCluster(cl)
+    df <- data.table::rbindlist(lst)
+    dplyr::tibble(df)
+  }
+  
 }
-
 get_rates <- function(rng) {
   cur_from = rng["cur_from"]
   cur_to = rng["cur_to"]
