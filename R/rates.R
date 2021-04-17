@@ -10,6 +10,10 @@ make_cur_range <- function(cur_from="CHF", cur_to="RUB", day_to=lubridate::day(S
               month_to=month_to, year_from=year_from, year_to=year_to), class="CurrencyRange")
 }
 
+pad <- function(x) {
+    stringr::str_pad(x, 2, "left", pad="0")
+}
+
 #' Fetches time series with conversion rates for two currencies and year count
 #'
 #' @param cur_from string (3-letter ISO Code) source currency
@@ -54,9 +58,6 @@ fetch_cur_data <- function(cur_from="CHF", cur_to="RUB", years=1) {
   
 }
 
-pad <- function(x) {
-    stringr::str_pad(x, 2, "left", pad="0")
-}
 
 get_rates <- function(rng) {
   cur_from <- rng["cur_from"]
