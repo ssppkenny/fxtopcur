@@ -10,6 +10,13 @@ make_cur_range <- function(cur_from="CHF", cur_to="RUB", day_to=lubridate::day(S
               month_to=month_to, year_from=year_from, year_to=year_to), class="CurrencyRange")
 }
 
+#' Pads a number with zeroes
+#'
+#' @param x a number
+#' @return A string
+#' @examples
+#' pad(1)
+#' @export
 pad <- function(x) {
     stringr::str_pad(x, 2, "left", pad="0")
 }
@@ -53,7 +60,7 @@ fetch_cur_data <- function(cur_from="CHF", cur_to="RUB", years=1) {
     df <- data.table::rbindlist(lst)
     dplyr::tibble(df)
   }
-  
+
 }
 
 
