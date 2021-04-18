@@ -7,3 +7,11 @@ It is possible by running
 ```r
 df <- fetch_cur_data(cur_from="CHF", cur_to="RUB", years=5)
 ```
+```
+df %>% ggplot(aes(x=day, y=value)) + geom_line()
+```
+
+
+![Plotted with ggplot](https://github.com/ssppkenny/fxtopcur/blob/master/Rplot.png)
+
+
