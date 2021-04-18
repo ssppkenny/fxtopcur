@@ -4,10 +4,16 @@
 It is sometimes interesting to know the historical conversion rates.
 It is possible by running 
 
+### Installation
+* install devtools (install.packages("devtools"))
+* devtools::install_github("ssppkenny/fxtopcur")
+
+### Usage
+
 ```r
+library(fxtopcur)
+library(ggplot2)
 df <- fetch_cur_data(cur_from="CHF", cur_to="RUB", years=5)
-```
-```
 df %>% ggplot(aes(x=day, y=value)) + geom_line()
 ```
 
