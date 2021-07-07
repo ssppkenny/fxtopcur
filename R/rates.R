@@ -53,10 +53,10 @@ fetch_cur_data <- function(cur_from="CHF", cur_to="RUB", years=1) {
     df <- get_rates(ranges[[1]])
     dplyr::tibble(df)
   } else {
-    cl <- parallel::makeCluster(l)
+    cl <- parallel::makeCluster(l, setup_timeout = 0.5)
     parallel::clusterExport(cl, c("pad","%>%", "str_replace"), envir=environment())
     lst <- parallel::parLapply(cl, ranges, get_rates)
-    parallel::stopCluster(cl, setup_timeout = 0.5)
+    parallel::stopCluster(cl)
     df <- data.table::rbindlist(lst)
     dplyr::tibble(df)
   }
