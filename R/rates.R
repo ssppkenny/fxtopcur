@@ -45,7 +45,7 @@ fetch_cur_data <- function(cur_from="CHF", cur_to="RUB", years=1) {
                         day_from=day_from, month_from=month_from, year_from=year_from)
     ranges[[i]] <- r
   }
-  l <- detectCores()
+  l <- parallel::detectCores()
   if (length(ranges)<l) {
     l <- length(ranges)
   }
