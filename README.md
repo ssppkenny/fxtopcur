@@ -2,7 +2,7 @@
 
 ### Purpose
 It is sometimes interesting to know the historical conversion rates.
-It is possible using this packаге.
+It is possible when using this packаgе.
 
 ### Installation
 * install devtools (install.packages("devtools"))
